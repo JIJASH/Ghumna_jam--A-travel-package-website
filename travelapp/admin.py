@@ -1,6 +1,15 @@
 from django.contrib import admin
 from .models import *
 
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display=('first_name','middle_name','last_name','address','contact_number','gender')
+    search_fields=('first_name','contact_number',)
+    list_filter=('gender',)
+    list_per_page=10
+
+
+
 @admin.register(TravelPackage)
 class TravelPackageAdmin(admin.ModelAdmin):
     list_display=('name','description','price','available_from','available_to','location','features',)

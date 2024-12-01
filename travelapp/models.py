@@ -2,7 +2,37 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser,Permission
 
 class User(AbstractUser):
-    phone_number=models.CharField(max_length=15,blank=True,null=True)  
+    contact_number=models.CharField(max_length=15,blank=True,null=True)
+    address=models.CharField(max_length=100,blank=True,null=True) 
+    
+
+
+
+
+class Customer(models.Model):
+    
+    first_name=models.CharField(max_length=50,blank=True,null=True)
+    middle_name=models.CharField(max_length=50,blank=True,null=True)
+    last_name=models.CharField(max_length=50,blank=True,null=True)
+    address=models.CharField(max_length=50,blank=True,null=True)
+    contact_number=models.CharField(max_length=20,blank=True,null=True)
+    
+    MALE_CHOICE='M'
+    FEMALE_CHOICE='F'
+    OTHER_CHOICE='O'
+    
+    GENDER_CHOICES=[
+        ('M','MALE'),
+        ('F','FEMALE'),
+        ('O','OTHER'),
+    ]
+    
+    gender=models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=True, null=True
+    )
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="customer")
     
 
 
