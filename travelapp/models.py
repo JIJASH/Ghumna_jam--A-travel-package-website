@@ -47,7 +47,7 @@ class TravelPackage(models.Model):
     available_from=models.DateField()
     available_to=models.DateField()
     location=models.CharField(max_length=255,blank=True,null=True)
-    features = models.JSONField(default=lambda: {"wifi": False, "meals": "Not Included"})    
+    features = models.JSONField(default=dict)  
     
     def __str__(self):
         return self.name
