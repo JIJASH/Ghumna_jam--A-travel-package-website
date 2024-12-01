@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,Permission
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class User(AbstractUser):
     contact_number=models.CharField(max_length=15,blank=True,null=True)
@@ -46,8 +47,7 @@ class TravelPackage(models.Model):
     available_from=models.DateField()
     available_to=models.DateField()
     location=models.CharField(max_length=255,blank=True,null=True)
-    features=models.JSONField(default=dict,blank=True) #{wifi : true ,meals:included}
-    
+    features = models.JSONField(default=lambda: {"wifi": False, "meals": "Not Included"})    
     
     def __str__(self):
         return self.name
@@ -67,7 +67,7 @@ class Booking(models.Model):
         ("Unpaid","Unpaid"),
         ("Paid","Paid"),
     ]
-    user=models.ForeignKey(User,on_delete=models.CASCADE, related_name="bookings")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="bookings")   
     travel_package=models.ForeignKey(TravelPackage, on_delete= models.CASCADE , related_name="bookings")
     booking_date=models.DateTimeField(auto_now_add=True)
     status=models.CharField(max_length=20,choices=STATUS_CHOICES,default="Pending")
@@ -102,6 +102,7 @@ class Payment(models.Model):
     payment_method=models.CharField(max_length=20,choices=PAYMENT_METHOD_CHOICES)
     payment_status=models.CharField(max_length=20,choices=PAYMENT_STATUS_CHOICES,default="Pending")
     
+    
     def __str__(self):
         return f"Payment for booking {self.booking.id}"
     
@@ -114,7 +115,7 @@ class Review(models.Model):
    
     user=models.ForeignKey(User,on_delete=models.CASCADE, related_name="reviews")
     travel_package=models.ForeignKey(TravelPackage, on_delete= models.CASCADE , related_name="reviews")
-    rating=models.PositiveIntegerField()
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])   
     comment=models.TextField(blank=True,null=True)
     review_date=models.DateTimeField(auto_now_add=True)
     reply=models.TextField(blank=True,null=True)
