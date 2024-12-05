@@ -9,6 +9,16 @@ class CustomerAdmin(admin.ModelAdmin):
     search_fields=('first_name','contact_number',)
     list_filter=('gender',)
     list_per_page=10
+    
+    
+    
+    
+@admin.register(Hotel)
+class HotelAdmin(admin.ModelAdmin):
+    list_display=('name','location','description','price_per_night','features','contact_number','rating',)
+    list_filter=('price_per_night',)
+    search_fields=('name','location',)
+    list_per_page=5
 
 
 
@@ -19,6 +29,15 @@ class TravelPackageAdmin(admin.ModelAdmin):
     search_fields=('name','location','available_from',)
     list_per_page=10
     
+    
+    
+    
+    
+@admin.register(SeasonalPrice)
+class SeasonalPriceAdmin(admin.ModelAdmin):
+    list_display=('travel_package','season','start_date','end_date','price',)
+    search_fields=('season',)
+    list_filter=('price',)
     
 
 @admin.register(Booking)
