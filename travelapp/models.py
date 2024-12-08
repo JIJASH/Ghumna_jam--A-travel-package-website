@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,Permission
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.timezone import now
 
 class User(AbstractUser):
     contact_number=models.CharField(max_length=15,blank=True,null=True)
     address=models.CharField(max_length=100,blank=True,null=True) 
+    profile_picture=models.ImageField(upload_to='profile_images/',blank=True,null=True)#will be saved to media/profile_images autossss
     
 
 
@@ -50,9 +52,11 @@ class Hotel(models.Model):
     rating = models.FloatField(
         validators=[MinValueValidator(1.0), MaxValueValidator(5.0)], blank=True, null=True
     )
+    image=models.ImageField(upload_to='hotel_images/',blank=True,null=True)
 
     def __str__(self):
         return self.name
+
 
 
 
@@ -67,10 +71,15 @@ class TravelPackage(models.Model):
     available_to=models.DateField()
     location=models.CharField(max_length=255,blank=True,null=True)
     features = models.JSONField(default=dict)  
+    image=models.ImageField(upload_to='travelpackage_images/',blank=True,null=True)
     hotels = models.ManyToManyField(Hotel, related_name='travel_packages', blank=True)
     
     def __str__(self):
         return self.name
+    
+    def get_seasonal_price(self, date):
+        seasonal_price = self.seasonal_prices.filter(start_date__lte=date, end_date__gte=date).first()
+        return seasonal_price.price if seasonal_price else self.price
     
     
     
@@ -113,14 +122,11 @@ class Booking(models.Model):
     payment_status=models.CharField(max_length=20,choices=PAYMENT_STATUS_CHOICES,default="Unpaid")
     travel_date=models.DateField()
     number_of_travelers=models.PositiveIntegerField(default=1)
-   
-    def get_applicable_price(self):
-
-        seasonal_price = self.travel_package.seasonal_prices.filter(
-            start_date__lte=self.travel_date, end_date__gte=self.travel_date
-        ).first()
-
-        return seasonal_price.price if seasonal_price else self.travel_package.price
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:  # On booking creation
+            self.price = self.travel_package.get_seasonal_price(self.travel_date)
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"Booking by {self.customer.user.username}"
@@ -136,6 +142,7 @@ class Payment(models.Model):
     PAYMENT_METHOD_CHOICES=[
         ("ESEWA","ESEWA"),
         ("Khalti","Khalti"),
+        ("Google Pay","Google Pay"),
         ("Bank Transfer","Bank Transfer"),
         
     ]    

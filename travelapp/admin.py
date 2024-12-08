@@ -15,7 +15,7 @@ class CustomerAdmin(admin.ModelAdmin):
     
 @admin.register(Hotel)
 class HotelAdmin(admin.ModelAdmin):
-    list_display=('name','location','description','price_per_night','features','contact_number','rating',)
+    list_display=('name','location','description','price_per_night','features','contact_number','rating','image',)
     list_filter=('price_per_night',)
     search_fields=('name','location',)
     list_per_page=5
@@ -24,7 +24,7 @@ class HotelAdmin(admin.ModelAdmin):
 
 @admin.register(TravelPackage)
 class TravelPackageAdmin(admin.ModelAdmin):
-    list_display=('name','description','price','available_from','available_to','location','features',)
+    list_display=('name','description','price','available_from','available_to','location','features','image',)
     list_filter=('name','price',)
     search_fields=('name','location','available_from',)
     list_per_page=10
