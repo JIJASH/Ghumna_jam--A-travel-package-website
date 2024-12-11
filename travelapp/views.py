@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
+from .pagination import CustomPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -36,6 +37,7 @@ class TravelPackageViewSet(viewsets.ModelViewSet):
     
     queryset=TravelPackage.objects.all()
     serializer_class=TravelPackageSerializer
+    pagination_class=CustomPagination
     
     
     
